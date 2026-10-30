@@ -168,6 +168,7 @@ Toda resposta de erro tem o mesmo formato:
 
 - `codigo`: fixo, usado pelo front para decidir o que fazer
 - `mensagem`: texto em português, pronto para mostrar ao usuário
+- Erro fora do formato `{ codigo, mensagem }` (ex.: backend desligado): o front trata como `SEM_CONEXAO`
 
 | Código | HTTP | Quando acontece |
 |---|---|---|
