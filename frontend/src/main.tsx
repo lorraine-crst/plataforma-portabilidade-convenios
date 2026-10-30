@@ -1,5 +1,9 @@
+import { CssBaseline, ThemeProvider } from "@mui/material";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router";
+import { App } from "./App";
+import { tema } from "./tema";
 
 const raiz = document.getElementById("root");
 
@@ -9,6 +13,11 @@ if (!raiz) {
 
 createRoot(raiz).render(
   <StrictMode>
-    <h1>Olá, Nuvola</h1>
+    <ThemeProvider theme={tema}>
+      <CssBaseline />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ThemeProvider>
   </StrictMode>,
 );
