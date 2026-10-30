@@ -1,8 +1,8 @@
-export type Perfil = "BENEFICIARIO" | "OPERADOR";
+export type Role = "BENEFICIARIO" | "OPERADOR";
 
-export type StatusOperacao = "PENDENTE" | "CONFIRMADA" | "REJEITADA";
+export type OperationStatus = "PENDENTE" | "CONFIRMADA" | "REJEITADA";
 
-export type CodigoErro =
+export type ErrorCode =
   | "CREDENCIAIS_INVALIDAS"
   | "SESSAO_EXPIRADA"
   | "ACESSO_NEGADO"
@@ -13,25 +13,25 @@ export type CodigoErro =
   | "VALIDACAO"
   | "SEM_CONEXAO";
 
-export interface Usuario {
+export interface User {
   nome: string;
-  perfil: Perfil;
+  perfil: Role;
 }
 
-export interface RespostaLogin extends Usuario {
+export interface LoginResponse extends User {
   token: string;
 }
 
-export interface Autorizacao {
+export interface Authorization {
   autorizacaoId: string;
   autorizadaEm: string;
 }
 
-export interface RespostaAutorizacao extends Autorizacao {
-  jaExistia: boolean;
+export interface AuthorizationResult extends Authorization {
+  alreadyExisted: boolean;
 }
 
-export interface Parcela {
+export interface Installment {
   parcelaId: string;
   convenioId: string;
   valor: number;
@@ -39,57 +39,57 @@ export interface Parcela {
   status: string;
 }
 
-export interface ContaDestino {
+export interface DestinationAccount {
   banco: string;
   agencia: string;
   conta: string;
 }
 
-export interface NovaPortabilidade {
+export interface NewPortability {
   beneficiarioId: string;
   parcelaIds: string[];
-  contaDestino: ContaDestino;
+  contaDestino: DestinationAccount;
 }
 
-export interface RespostaCriacaoPortabilidade {
+export interface CreatePortabilityResponse {
   operacaoId: string;
-  status: StatusOperacao;
+  status: OperationStatus;
 }
 
-export interface EventoOperacao {
-  status: StatusOperacao;
+export interface OperationEvent {
+  status: OperationStatus;
   ocorridoEm: string;
   descricao: string;
 }
 
-export interface Operacao {
+export interface Operation {
   operacaoId: string;
   beneficiarioId: string;
-  status: StatusOperacao;
+  status: OperationStatus;
   motivoRejeicao: string | null;
   criadaEm: string;
   valorTotal: number;
-  parcelas: Parcela[];
-  contaDestino: ContaDestino;
-  eventos: EventoOperacao[];
+  parcelas: Installment[];
+  contaDestino: DestinationAccount;
+  eventos: OperationEvent[];
 }
 
-export interface ItemOperacao {
+export interface OperationListItem {
   operacaoId: string;
   beneficiarioId: string;
-  status: StatusOperacao;
+  status: OperationStatus;
   motivoRejeicao: string | null;
   criadaEm: string;
   quantidadeParcelas: number;
   valorTotal: number;
 }
 
-export interface FiltrosOperacoes {
-  status?: StatusOperacao;
+export interface OperationFilters {
+  status?: OperationStatus;
   beneficiarioId?: string;
 }
 
-export interface Resumo {
+export interface Summary {
   total: number;
   pendentes: number;
   confirmadas: number;
@@ -97,7 +97,7 @@ export interface Resumo {
   valorTotalConfirmado: number;
 }
 
-export interface RespostaErro {
-  codigo: CodigoErro;
+export interface ErrorResponse {
+  codigo: ErrorCode;
   mensagem: string;
 }

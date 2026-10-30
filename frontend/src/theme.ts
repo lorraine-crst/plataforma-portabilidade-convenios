@@ -1,6 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 
-export const tema = createTheme({
+export const theme = createTheme({
   palette: {
     mode: "light",
     contrastThreshold: 4.5,

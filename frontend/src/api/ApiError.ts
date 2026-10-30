@@ -1,13 +1,13 @@
-import type { CodigoErro } from "../types";
+import type { ErrorCode } from "../types";
 
 export class ApiError extends Error {
-  readonly codigo: CodigoErro;
+  readonly code: ErrorCode;
   readonly status: number;
 
-  constructor(codigo: CodigoErro, mensagem: string, status: number) {
-    super(mensagem);
+  constructor(code: ErrorCode, message: string, status: number) {
+    super(message);
     this.name = "ApiError";
-    this.codigo = codigo;
+    this.code = code;
     this.status = status;
   }
 }

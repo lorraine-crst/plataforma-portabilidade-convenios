@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import { useParams } from "react-router";
 
-export function Acompanhamento() {
+export function OperationTrackingPage() {
   const { id } = useParams();
 
   return (

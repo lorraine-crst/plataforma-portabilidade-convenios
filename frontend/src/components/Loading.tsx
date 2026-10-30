@@ -1,10 +1,10 @@
 import { CircularProgress, Stack, Typography } from "@mui/material";
 
-interface CarregandoProps {
-  texto?: string;
+interface LoadingProps {
+  text?: string;
 }
 
-export function Carregando({ texto = "Carregando…" }: CarregandoProps) {
+export function Loading({ text = "Carregando…" }: LoadingProps) {
   return (
     <Stack
       direction="row"
@@ -13,7 +13,7 @@ export function Carregando({ texto = "Carregando…" }: CarregandoProps) {
       sx={{ alignItems: "center", py: 2 }}
     >
       <CircularProgress size={24} aria-hidden="true" />
-      <Typography color="text.secondary">{texto}</Typography>
+      <Typography color="text.secondary">{text}</Typography>
     </Stack>
   );
 }

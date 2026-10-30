@@ -1,9 +1,9 @@
 import { Typography } from "@mui/material";
 
-export function Autorizar() {
+export function MyRequestsPage() {
   return (
     <Typography variant="h4" component="h1">
-      Autorização
+      Minhas solicitações
     </Typography>
   );
 }

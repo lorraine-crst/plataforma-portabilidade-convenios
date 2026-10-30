@@ -8,40 +8,40 @@ import {
   type ReactNode,
 } from "react";
 import { useNavigate } from "react-router";
-import { definirAoExpirarSessao, definirToken } from "../api/client";
-import { login as loginNaApi } from "../api/endpoints";
-import type { RespostaLogin, Usuario } from "../types";
+import { setAuthToken, setOnSessionExpired } from "../api/client";
+import { login as loginRequest } from "../api/endpoints";
+import type { LoginResponse, User } from "../types";
 
-const CHAVE_SESSAO = "nuvola.sessao";
+const SESSION_STORAGE_KEY = "nuvola.session";
 
-interface ValorAuth {
-  usuario: Usuario | null;
+interface AuthContextValue {
+  user: User | null;
   token: string | null;
-  login: (usuario: string, senha: string) => Promise<Usuario>;
+  login: (username: string, password: string) => Promise<User>;
   logout: () => void;
 }
 
-const AuthContext = createContext<ValorAuth | null>(null);
+const AuthContext = createContext<AuthContextValue | null>(null);
 
-function lerSessaoSalva(): RespostaLogin | null {
+function restoreStoredSession(): LoginResponse | null {
   try {
-    const salva = sessionStorage.getItem(CHAVE_SESSAO);
+    const stored = sessionStorage.getItem(SESSION_STORAGE_KEY);
 
-    if (!salva) {
+    if (!stored) {
       return null;
     }
 
-    const sessao = JSON.parse(salva) as RespostaLogin;
+    const session = JSON.parse(stored) as LoginResponse;
 
     if (
-      !sessao.token ||
-      (sessao.perfil !== "BENEFICIARIO" && sessao.perfil !== "OPERADOR")
+      !session.token ||
+      (session.perfil !== "BENEFICIARIO" && session.perfil !== "OPERADOR")
     ) {
       return null;
     }
 
-    definirToken(sessao.token);
-    return sessao;
+    setAuthToken(session.token);
+    return session;
   } catch {
     return null;
   }
@@ -53,52 +53,54 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
-  const [sessao, setSessao] = useState<RespostaLogin | null>(lerSessaoSalva);
+  const [session, setSession] = useState<LoginResponse | null>(
+    restoreStoredSession,
+  );
 
-  const login = useCallback(async (usuario: string, senha: string) => {
-    const resposta = await loginNaApi(usuario, senha);
-    sessionStorage.setItem(CHAVE_SESSAO, JSON.stringify(resposta));
-    definirToken(resposta.token);
-    setSessao(resposta);
-    return { nome: resposta.nome, perfil: resposta.perfil };
+  const login = useCallback(async (username: string, password: string) => {
+    const response = await loginRequest(username, password);
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(response));
+    setAuthToken(response.token);
+    setSession(response);
+    return { nome: response.nome, perfil: response.perfil };
   }, []);
 
   const logout = useCallback(() => {
-    sessionStorage.removeItem(CHAVE_SESSAO);
-    definirToken(null);
-    setSessao(null);
+    sessionStorage.removeItem(SESSION_STORAGE_KEY);
+    setAuthToken(null);
+    setSession(null);
   }, []);
 
   useEffect(() => {
-    definirAoExpirarSessao(() => {
+    setOnSessionExpired(() => {
       logout();
-      navigate("/login", { replace: true, state: { sessaoExpirada: true } });
+      navigate("/login", { replace: true, state: { sessionExpired: true } });
     });
 
     return () => {
-      definirAoExpirarSessao(null);
+      setOnSessionExpired(null);
     };
   }, [logout, navigate]);
 
-  const valor = useMemo<ValorAuth>(
+  const value = useMemo<AuthContextValue>(
     () => ({
-      usuario: sessao ? { nome: sessao.nome, perfil: sessao.perfil } : null,
-      token: sessao?.token ?? null,
+      user: session ? { nome: session.nome, perfil: session.perfil } : null,
+      token: session?.token ?? null,
       login,
       logout,
     }),
-    [sessao, login, logout],
+    [session, login, logout],
   );
 
-  return <AuthContext value={valor}>{children}</AuthContext>;
+  return <AuthContext value={value}>{children}</AuthContext>;
 }
 
-export function useAuth(): ValorAuth {
-  const valor = useContext(AuthContext);
+export function useAuth(): AuthContextValue {
+  const value = useContext(AuthContext);
 
-  if (!valor) {
-    throw new Error("useAuth precisa ser usado dentro do AuthProvider");
+  if (!value) {
+    throw new Error("useAuth must be used within an AuthProvider");
   }
 
-  return valor;
+  return value;
 }

@@ -9,30 +9,30 @@ import {
 } from "@mui/material";
 import { Link, NavLink, Outlet, useNavigate } from "react-router";
 import { useAuth } from "../auth/AuthContext";
-import { nomesDosPerfis } from "../auth/perfis";
-import type { Perfil } from "../types";
+import { roleLabels } from "../auth/roles";
+import type { Role } from "../types";
 
-interface ItemMenu {
-  rotulo: string;
-  destino: string;
+interface MenuItem {
+  label: string;
+  path: string;
 }
 
-const menus: Record<Perfil, ItemMenu[]> = {
+const menus: Record<Role, MenuItem[]> = {
   BENEFICIARIO: [
-    { rotulo: "Autorização", destino: "/beneficiario/autorizar" },
-    { rotulo: "Minhas solicitações", destino: "/beneficiario/solicitacoes" },
+    { label: "Autorização", path: "/beneficiario/autorizar" },
+    { label: "Minhas solicitações", path: "/beneficiario/solicitacoes" },
   ],
   OPERADOR: [
-    { rotulo: "Nova portabilidade", destino: "/operador/portabilidade" },
-    { rotulo: "Painel", destino: "/operador/painel" },
+    { label: "Nova portabilidade", path: "/operador/portabilidade" },
+    { label: "Painel", path: "/operador/painel" },
   ],
 };
 
 export function Layout() {
-  const { usuario, logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  function sair() {
+  function handleLogout() {
     logout();
     navigate("/login", { replace: true });
   }
@@ -50,24 +50,24 @@ export function Layout() {
             Nuvola
           </Typography>
 
-          {usuario && (
+          {user && (
             <>
               <Box
                 component="nav"
                 aria-label="Menu principal"
                 sx={{ display: "flex", gap: 1, flexGrow: 1 }}
               >
-                {menus[usuario.perfil].map((item) => (
+                {menus[user.perfil].map((item) => (
                   <Button
-                    key={item.destino}
+                    key={item.path}
                     component={NavLink}
-                    to={item.destino}
+                    to={item.path}
                     color="inherit"
                     sx={{
                       "&.active": { bgcolor: "rgba(255, 255, 255, 0.15)" },
                     }}
                   >
-                    {item.rotulo}
+                    {item.label}
                   </Button>
                 ))}
               </Box>
@@ -75,13 +75,17 @@ export function Layout() {
               <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
                 <Box sx={{ textAlign: "right" }}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {usuario.nome}
+                    {user.nome}
                   </Typography>
                   <Typography variant="caption" sx={{ opacity: 0.85 }}>
-                    {nomesDosPerfis[usuario.perfil]}
+                    {roleLabels[user.perfil]}
                   </Typography>
                 </Box>
-                <Button color="inherit" variant="outlined" onClick={sair}>
+                <Button
+                  color="inherit"
+                  variant="outlined"
+                  onClick={handleLogout}
+                >
                   Sair
                 </Button>
               </Stack>

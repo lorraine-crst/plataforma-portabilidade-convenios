@@ -1,123 +1,123 @@
-import type { RespostaErro } from "../types";
+import type { ErrorResponse } from "../types";
 import { ApiError } from "./ApiError";
 
-const TIMEOUT_PADRAO_MS = 10000;
+const DEFAULT_TIMEOUT_MS = 10000;
 
-let token: string | null = null;
-let aoExpirarSessao: (() => void) | null = null;
+let authToken: string | null = null;
+let onSessionExpired: (() => void) | null = null;
 
-export function definirToken(novoToken: string | null): void {
-  token = novoToken;
+export function setAuthToken(token: string | null): void {
+  authToken = token;
 }
 
-export function definirAoExpirarSessao(funcao: (() => void) | null): void {
-  aoExpirarSessao = funcao;
+export function setOnSessionExpired(callback: (() => void) | null): void {
+  onSessionExpired = callback;
 }
 
-interface OpcoesRequisicao {
-  metodo?: "GET" | "POST";
-  corpo?: unknown;
-  cabecalhos?: Record<string, string>;
+interface RequestOptions {
+  method?: "GET" | "POST";
+  body?: unknown;
+  headers?: Record<string, string>;
   timeoutMs?: number;
 }
 
-export interface RespostaCompleta<T> {
+export interface ResponseWithStatus<T> {
   status: number;
-  dados: T;
+  data: T;
 }
 
-function temFormatoDeErro(valor: unknown): valor is RespostaErro {
+function isErrorResponse(value: unknown): value is ErrorResponse {
   return (
-    typeof valor === "object" &&
-    valor !== null &&
-    "codigo" in valor &&
-    "mensagem" in valor
+    typeof value === "object" &&
+    value !== null &&
+    "codigo" in value &&
+    "mensagem" in value
   );
 }
 
-async function lerCorpo(resposta: Response): Promise<unknown> {
-  const texto = await resposta.text();
+async function readBody(response: Response): Promise<unknown> {
+  const text = await response.text();
 
-  if (!texto) {
+  if (!text) {
     return undefined;
   }
 
   try {
-    return JSON.parse(texto);
+    return JSON.parse(text);
   } catch {
     return undefined;
   }
 }
 
-export async function requestCompleto<T>(
-  caminho: string,
-  opcoes: OpcoesRequisicao = {},
-): Promise<RespostaCompleta<T>> {
+export async function requestWithStatus<T>(
+  path: string,
+  options: RequestOptions = {},
+): Promise<ResponseWithStatus<T>> {
   const {
-    metodo = "GET",
-    corpo,
-    cabecalhos = {},
-    timeoutMs = TIMEOUT_PADRAO_MS,
-  } = opcoes;
+    method = "GET",
+    body,
+    headers: extraHeaders = {},
+    timeoutMs = DEFAULT_TIMEOUT_MS,
+  } = options;
 
   const headers: Record<string, string> = {
     Accept: "application/json",
-    ...cabecalhos,
+    ...extraHeaders,
   };
 
-  if (corpo !== undefined) {
+  if (body !== undefined) {
     headers["Content-Type"] = "application/json";
   }
 
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
+  if (authToken) {
+    headers.Authorization = `Bearer ${authToken}`;
   }
 
-  const controlador = new AbortController();
-  const temporizador = setTimeout(() => controlador.abort(), timeoutMs);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-  let resposta: Response;
+  let response: Response;
 
   try {
-    resposta = await fetch(`/api${caminho}`, {
-      method: metodo,
+    response = await fetch(`/api${path}`, {
+      method,
       headers,
-      body: corpo === undefined ? undefined : JSON.stringify(corpo),
-      signal: controlador.signal,
+      body: body === undefined ? undefined : JSON.stringify(body),
+      signal: controller.signal,
     });
   } catch {
-    const mensagem = controlador.signal.aborted
+    const message = controller.signal.aborted
       ? "O servidor demorou para responder. Tente novamente."
       : "Não foi possível conectar ao servidor. Verifique sua conexão.";
-    throw new ApiError("SEM_CONEXAO", mensagem, 0);
+    throw new ApiError("SEM_CONEXAO", message, 0);
   } finally {
-    clearTimeout(temporizador);
+    clearTimeout(timeoutId);
   }
 
-  const dados = await lerCorpo(resposta);
+  const data = await readBody(response);
 
-  if (!resposta.ok) {
-    const erro: RespostaErro = temFormatoDeErro(dados)
-      ? dados
+  if (!response.ok) {
+    const error: ErrorResponse = isErrorResponse(data)
+      ? data
       : {
           codigo: "SEM_CONEXAO",
           mensagem: "Não foi possível falar com o servidor. Tente novamente.",
         };
 
-    if (erro.codigo === "SESSAO_EXPIRADA") {
-      aoExpirarSessao?.();
+    if (error.codigo === "SESSAO_EXPIRADA") {
+      onSessionExpired?.();
     }
 
-    throw new ApiError(erro.codigo, erro.mensagem, resposta.status);
+    throw new ApiError(error.codigo, error.mensagem, response.status);
   }
 
-  return { status: resposta.status, dados: dados as T };
+  return { status: response.status, data: data as T };
 }
 
 export async function request<T>(
-  caminho: string,
-  opcoes: OpcoesRequisicao = {},
+  path: string,
+  options: RequestOptions = {},
 ): Promise<T> {
-  const { dados } = await requestCompleto<T>(caminho, opcoes);
-  return dados;
+  const { data } = await requestWithStatus<T>(path, options);
+  return data;
 }

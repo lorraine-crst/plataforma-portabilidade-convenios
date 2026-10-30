@@ -1,4 +1,4 @@
-export function gerarId(): string {
+export function generateId(): string {
   if (typeof crypto.randomUUID === "function") {
     return crypto.randomUUID();
   }

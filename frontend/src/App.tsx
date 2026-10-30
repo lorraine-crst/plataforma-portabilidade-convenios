@@ -1,37 +1,40 @@
 import { Route, Routes } from "react-router";
-import { RedirecionarInicio } from "./auth/RedirecionarInicio";
-import { RotaProtegida } from "./auth/RotaProtegida";
+import { HomeRedirect } from "./auth/HomeRedirect";
+import { ProtectedRoute } from "./auth/ProtectedRoute";
 import { Layout } from "./components/Layout";
-import { Autorizar } from "./pages/beneficiario/Autorizar";
-import { Solicitacoes } from "./pages/beneficiario/Solicitacoes";
-import { Acompanhamento } from "./pages/comum/Acompanhamento";
-import { Login } from "./pages/comum/Login";
-import { NaoEncontrada } from "./pages/comum/NaoEncontrada";
-import { Painel } from "./pages/operador/Painel";
-import { Portabilidade } from "./pages/operador/Portabilidade";
+import { AuthorizePage } from "./pages/beneficiary/AuthorizePage";
+import { MyRequestsPage } from "./pages/beneficiary/MyRequestsPage";
+import { DashboardPage } from "./pages/operator/DashboardPage";
+import { NewPortabilityPage } from "./pages/operator/NewPortabilityPage";
+import { LoginPage } from "./pages/shared/LoginPage";
+import { NotFoundPage } from "./pages/shared/NotFoundPage";
+import { OperationTrackingPage } from "./pages/shared/OperationTrackingPage";
 
 export function App() {
   return (
     <Routes>
-      <Route path="/" element={<RedirecionarInicio />} />
-      <Route path="/login" element={<Login />} />
-      <Route element={<RotaProtegida />}>
+      <Route path="/" element={<HomeRedirect />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
-          <Route element={<RotaProtegida perfil="BENEFICIARIO" />}>
-            <Route path="/beneficiario/autorizar" element={<Autorizar />} />
+          <Route element={<ProtectedRoute role="BENEFICIARIO" />}>
+            <Route path="/beneficiario/autorizar" element={<AuthorizePage />} />
             <Route
               path="/beneficiario/solicitacoes"
-              element={<Solicitacoes />}
+              element={<MyRequestsPage />}
             />
           </Route>
-          <Route element={<RotaProtegida perfil="OPERADOR" />}>
-            <Route path="/operador/portabilidade" element={<Portabilidade />} />
-            <Route path="/operador/painel" element={<Painel />} />
+          <Route element={<ProtectedRoute role="OPERADOR" />}>
+            <Route
+              path="/operador/portabilidade"
+              element={<NewPortabilityPage />}
+            />
+            <Route path="/operador/painel" element={<DashboardPage />} />
           </Route>
-          <Route path="/operacoes/:id" element={<Acompanhamento />} />
+          <Route path="/operacoes/:id" element={<OperationTrackingPage />} />
         </Route>
       </Route>
-      <Route path="*" element={<NaoEncontrada />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
