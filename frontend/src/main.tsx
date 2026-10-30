@@ -3,6 +3,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import { App } from "./App";
+import { AuthProvider } from "./auth/AuthContext";
 import { tema } from "./tema";
 
 const raiz = document.getElementById("root");
@@ -16,7 +17,9 @@ createRoot(raiz).render(
     <ThemeProvider theme={tema}>
       <CssBaseline />
       <BrowserRouter>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </BrowserRouter>
     </ThemeProvider>
   </StrictMode>,

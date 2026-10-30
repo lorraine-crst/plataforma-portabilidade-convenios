@@ -1,4 +1,6 @@
-import { Navigate, Route, Routes } from "react-router";
+import { Route, Routes } from "react-router";
+import { RedirecionarInicio } from "./auth/RedirecionarInicio";
+import { RotaProtegida } from "./auth/RotaProtegida";
 import { Layout } from "./components/Layout";
 import { Autorizar } from "./pages/beneficiario/Autorizar";
 import { Solicitacoes } from "./pages/beneficiario/Solicitacoes";
@@ -11,14 +13,23 @@ import { Portabilidade } from "./pages/operador/Portabilidade";
 export function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<RedirecionarInicio />} />
       <Route path="/login" element={<Login />} />
-      <Route element={<Layout />}>
-        <Route path="/beneficiario/autorizar" element={<Autorizar />} />
-        <Route path="/beneficiario/solicitacoes" element={<Solicitacoes />} />
-        <Route path="/operador/portabilidade" element={<Portabilidade />} />
-        <Route path="/operador/painel" element={<Painel />} />
-        <Route path="/operacoes/:id" element={<Acompanhamento />} />
+      <Route element={<RotaProtegida />}>
+        <Route element={<Layout />}>
+          <Route element={<RotaProtegida perfil="BENEFICIARIO" />}>
+            <Route path="/beneficiario/autorizar" element={<Autorizar />} />
+            <Route
+              path="/beneficiario/solicitacoes"
+              element={<Solicitacoes />}
+            />
+          </Route>
+          <Route element={<RotaProtegida perfil="OPERADOR" />}>
+            <Route path="/operador/portabilidade" element={<Portabilidade />} />
+            <Route path="/operador/painel" element={<Painel />} />
+          </Route>
+          <Route path="/operacoes/:id" element={<Acompanhamento />} />
+        </Route>
       </Route>
       <Route path="*" element={<NaoEncontrada />} />
     </Routes>
