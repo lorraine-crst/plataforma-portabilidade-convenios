@@ -34,7 +34,21 @@ Resposta `200`:
 
 ## Autorização (opt-in)
 
-### POST /api/autorizacoes
+Cada beneficiário tem no máximo uma autorização. Ela é um recurso único, identificado pelo token: a mesma URL serve para consultar (`GET`) e para registrar (`POST`).
+
+### GET /api/autorizacao
+
+Acesso: `BENEFICIARIO`. O ID do beneficiário vem do token.
+
+Resposta `200` quando o beneficiário já autorizou:
+
+```json
+{ "autorizacaoId": "7f1c2e9a-...", "autorizadaEm": "2026-10-29T21:40:00Z" }
+```
+
+Resposta `404` com o código `NAO_ENCONTRADO` quando ainda não existe autorização.
+
+### POST /api/autorizacao
 
 Acesso: `BENEFICIARIO`. O ID do beneficiário vem do token, por isso não há corpo.
 
@@ -175,7 +189,7 @@ Toda resposta de erro tem o mesmo formato:
 | `CREDENCIAIS_INVALIDAS` | 401 | Usuário ou senha incorretos no login |
 | `SESSAO_EXPIRADA` | 401 | Token ausente, inválido ou expirado em qualquer rota protegida |
 | `ACESSO_NEGADO` | 403 | Perfil sem permissão para a rota, ou beneficiário tentando ver operação de outro |
-| `NAO_ENCONTRADO` | 404 | Operação inexistente em `GET /api/portabilidades/{id}` |
+| `NAO_ENCONTRADO` | 404 | Operação inexistente em `GET /api/portabilidades/{id}`, ou beneficiário sem autorização em `GET /api/autorizacao` |
 | `CONFLITO` | 409 | Mesma `Idempotency-Key` enviada com corpo diferente |
 | `BENEFICIARIO_NAO_AUTORIZADO` | 422 | Operador consulta agenda ou solicita portabilidade de beneficiário sem opt-in |
 | `CENTRAL_INDISPONIVEL` | 503 | A Central não respondeu ou respondeu com erro (ex.: `BEN_ERRO`) |
@@ -185,9 +199,9 @@ Toda resposta de erro tem o mesmo formato:
 Comportamento do front por código:
 
 - `SESSAO_EXPIRADA`: faz logout e redireciona para `/login` com o aviso "Sessão expirada"
-- `NAO_ENCONTRADO`: mostra a tela de erro com "Solicitação não encontrada"
+- `NAO_ENCONTRADO`: em `GET /api/portabilidades/{id}`, mostra a tela de erro com "Solicitação não encontrada"; em `GET /api/autorizacao`, indica que o beneficiário ainda não autorizou e abre o dialog de autorização
 - `CONFLITO`: mostra a tela de erro com "Esta solicitação já foi enviada com outros dados"
-- Demais códigos: a própria tela mostra um `<Alerta tipo="erro">` com a `mensagem`
+- Demais códigos: a própria tela mostra um `<AppAlert type="error">` com a `mensagem`
 
 ## Usuários de teste
 
@@ -215,5 +229,3 @@ O simulador da Central é usado sem alterações. Como a agenda do `BEN_ERRO` ve
 
 - Backend: teste de integração que chama a Central com `BEN_ERRO` e verifica a resposta `503` com `CENTRAL_INDISPONIVEL`
 - Front: teste de componente com `cy.intercept` devolvendo `503`, verificando que a tela mostra a mensagem e o botão "Tentar novamente"
-
-## Pendências
