@@ -1,22 +1,22 @@
-const formatadorMoeda = new Intl.NumberFormat("pt-BR", {
+const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
   currency: "BRL",
 });
 
-const formatadorDataHora = new Intl.DateTimeFormat("pt-BR", {
+const dateTimeFormatter = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "short",
   timeStyle: "short",
 });
 
-export function formatarMoeda(valor: number): string {
-  return formatadorMoeda.format(valor);
+export function formatCurrency(value: number): string {
+  return currencyFormatter.format(value);
 }
 
-export function formatarData(data: string): string {
-  const [ano, mes, dia] = data.slice(0, 10).split("-");
-  return `${dia}/${mes}/${ano}`;
+export function formatDate(date: string): string {
+  const [year, month, day] = date.slice(0, 10).split("-");
+  return `${day}/${month}/${year}`;
 }
 
-export function formatarDataHora(dataIso: string): string {
-  return formatadorDataHora.format(new Date(dataIso));
+export function formatDateTime(isoDate: string): string {
+  return dateTimeFormatter.format(new Date(isoDate));
 }
