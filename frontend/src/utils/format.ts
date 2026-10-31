@@ -20,3 +20,12 @@ export function formatDate(date: string): string {
 export function formatDateTime(isoDate: string): string {
   return dateTimeFormatter.format(new Date(isoDate));
 }
+
+const timestampFormatter = new Intl.DateTimeFormat("pt-BR", {
+  dateStyle: "short",
+  timeStyle: "medium",
+});
+
+export function formatTimestamp(isoDate: string): string {
+  return timestampFormatter.format(new Date(isoDate));
+}
