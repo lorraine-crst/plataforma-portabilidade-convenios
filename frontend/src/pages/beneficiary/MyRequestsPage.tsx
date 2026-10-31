@@ -8,6 +8,7 @@ import { useNotification } from "../../notifications/NotificationContext";
 import type { AuthorizationResult } from "../../types";
 import { formatDateTime } from "../../utils/format";
 import { AuthorizationDialog } from "./AuthorizationDialog";
+import { RequestsPanel } from "../shared/RequestsPanel";
 
 export function MyRequestsPage() {
   const { notify } = useNotification();
@@ -64,6 +65,7 @@ export function MyRequestsPage() {
           </Button>
         </Stack>
       )}
+      <RequestsPanel showBeneficiary={false} />
 
       <AuthorizationDialog
         open={needsAuthorization && !dialogDismissed}
