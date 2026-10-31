@@ -91,7 +91,7 @@ export function LoginPage() {
         display: "grid",
         gridTemplateColumns: { xs: "1fr", md: "auto minmax(0, 1fr)" },
         gridTemplateRows: { xs: "auto 1fr", md: "auto" },
-        bgcolor: "background.default",
+        bgcolor: "background.cream",
       }}
     >
       <Box
@@ -164,7 +164,7 @@ export function LoginPage() {
             >
               Entrar
             </Typography>
-            <Typography color="brown">
+            <Typography sx={{ color: "brown" }}>
               Use seu usuário e senha para acessar a plataforma.
             </Typography>
           </div>
@@ -186,7 +186,6 @@ export function LoginPage() {
               <TextField
                 id="login-username"
                 label="Usuário"
-                color="brown"
                 required
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
@@ -194,13 +193,13 @@ export function LoginPage() {
                 helperText={errors.username}
                 autoComplete="username"
                 autoFocus
+                color="brown"
                 fullWidth
                 sx={fieldSx}
               />
               <TextField
                 id="login-password"
                 label="Senha"
-                color="brown"
                 required
                 type={showPassword ? "text" : "password"}
                 value={password}
@@ -208,6 +207,7 @@ export function LoginPage() {
                 error={Boolean(errors.password)}
                 helperText={errors.password}
                 autoComplete="current-password"
+                color="brown"
                 fullWidth
                 sx={fieldSx}
                 slotProps={{
@@ -232,8 +232,8 @@ export function LoginPage() {
               <Button
                 type="submit"
                 variant="contained"
-                color="brown"
                 size="large"
+                color="brown"
                 disabled={isSubmitting}
                 sx={{ borderRadius: "10px", py: 1.5 }}
               >

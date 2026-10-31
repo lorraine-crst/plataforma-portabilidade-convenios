@@ -90,7 +90,11 @@ export function SummaryCards({
           <Typography variant="body2" color="textSecondary">
             Valor portado
           </Typography>
-          <Typography variant="h5" component="p" sx={{ fontWeight: 700 }}>
+          <Typography
+            variant="h5"
+            component="p"
+            sx={{ fontWeight: 700, color: "text.accent" }}
+          >
             {formatCurrency(summary.valorTotalConfirmado)}
           </Typography>
         </CardContent>

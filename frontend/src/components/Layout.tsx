@@ -39,8 +39,28 @@ export function Layout() {
 
   return (
     <>
-      <AppBar position="static" color="secondary" elevation={0}>
-        <Toolbar sx={{ gap: 2, flexWrap: "wrap", py: 1 }}>
+      <Box
+        component="a"
+        href="#conteudo"
+        sx={{
+          position: "absolute",
+          left: 8,
+          top: -48,
+          zIndex: 1300,
+          px: 2,
+          py: 1,
+          borderRadius: 1,
+          bgcolor: "background.paper",
+          color: "primary.main",
+          fontWeight: 600,
+          "&:focus": { top: 8 },
+        }}
+      >
+        Pular para o conteúdo
+      </Box>
+
+      <AppBar position="static" color="primary" elevation={0}>
+        <Toolbar sx={{ gap: 2, py: 1 }}>
           <Box
             component={Link}
             to="/"
@@ -72,7 +92,12 @@ export function Layout() {
               </Box>
 
               <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
-                <Box sx={{ textAlign: "right" }}>
+                <Box
+                  sx={{
+                    textAlign: "right",
+                    display: { xs: "none", sm: "block" },
+                  }}
+                >
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {user.nome}
                   </Typography>
@@ -92,7 +117,14 @@ export function Layout() {
           )}
         </Toolbar>
       </AppBar>
-      <Container component="main" maxWidth="lg" sx={{ py: 3 }}>
+
+      <Container
+        component="main"
+        id="conteudo"
+        tabIndex={-1}
+        maxWidth="lg"
+        sx={{ py: 3, outline: "none" }}
+      >
         <Outlet />
       </Container>
     </>

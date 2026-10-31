@@ -10,7 +10,16 @@ interface AppAlertProps {
 
 export function AppAlert({ type, children }: AppAlertProps) {
   return (
-    <Alert severity={type} role={type === "error" ? "alert" : "status"}>
+    <Alert
+      severity={type}
+      variant={type === "info" ? "outlined" : "standard"}
+      role={type === "error" ? "alert" : "status"}
+      sx={
+        type === "info"
+          ? { bgcolor: "background.paper", borderColor: "divider" }
+          : undefined
+      }
+    >
       {children}
     </Alert>
   );

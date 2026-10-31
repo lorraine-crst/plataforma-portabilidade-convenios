@@ -16,6 +16,8 @@ import type { Installment } from "../../types";
 import { isPastDate } from "../../utils/date";
 import { formatCurrency, formatDate } from "../../utils/format";
 
+const hideOnMobile = { display: { xs: "none", sm: "table-cell" } };
+
 interface InstallmentTableProps {
   installments: Installment[];
   selectedIds: string[];
@@ -69,7 +71,7 @@ export function InstallmentTable({
 
       <Paper variant="outlined">
         <TableContainer>
-          <Table>
+          <Table aria-label="Parcelas da agenda do beneficiário">
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox">
@@ -84,7 +86,7 @@ export function InstallmentTable({
                   />
                 </TableCell>
                 <TableCell>Parcela</TableCell>
-                <TableCell>Convênio</TableCell>
+                <TableCell sx={hideOnMobile}>Convênio</TableCell>
                 <TableCell>Data do desconto</TableCell>
                 <TableCell align="right">Valor</TableCell>
                 <TableCell>Status</TableCell>
@@ -114,7 +116,9 @@ export function InstallmentTable({
                       />
                     </TableCell>
                     <TableCell>{installment.parcelaId}</TableCell>
-                    <TableCell>{installment.convenioId}</TableCell>
+                    <TableCell sx={hideOnMobile}>
+                      {installment.convenioId}
+                    </TableCell>
                     <TableCell>
                       {formatDate(installment.dataDesconto)}
                       {pastDate && (

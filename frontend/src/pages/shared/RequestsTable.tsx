@@ -13,6 +13,8 @@ import { StatusBadge } from "../../components/StatusBadge";
 import type { OperationListItem } from "../../types";
 import { formatCurrency, formatDateTime } from "../../utils/format";
 
+const hideOnMobile = { display: { xs: "none", sm: "table-cell" } };
+
 interface RequestsTableProps {
   operations: OperationListItem[];
   showBeneficiary: boolean;
@@ -27,15 +29,17 @@ export function RequestsTable({
   return (
     <Paper variant="outlined">
       <TableContainer>
-        <Table>
+        <Table aria-label="Solicitações de portabilidade">
           <TableHead>
             <TableRow>
               <TableCell>Data</TableCell>
               {showBeneficiary && <TableCell>Beneficiário</TableCell>}
-              <TableCell align="right">Parcelas</TableCell>
+              <TableCell align="right" sx={hideOnMobile}>
+                Parcelas
+              </TableCell>
               <TableCell align="right">Valor</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Motivo</TableCell>
+              <TableCell sx={hideOnMobile}>Motivo</TableCell>
               <TableCell />
             </TableRow>
           </TableHead>
@@ -54,7 +58,7 @@ export function RequestsTable({
                   {showBeneficiary && (
                     <TableCell>{operation.beneficiarioId}</TableCell>
                   )}
-                  <TableCell align="right">
+                  <TableCell align="right" sx={hideOnMobile}>
                     {operation.quantidadeParcelas}
                   </TableCell>
                   <TableCell align="right">
@@ -63,7 +67,9 @@ export function RequestsTable({
                   <TableCell>
                     <StatusBadge status={operation.status} />
                   </TableCell>
-                  <TableCell>{operation.motivoRejeicao ?? "—"}</TableCell>
+                  <TableCell sx={hideOnMobile}>
+                    {operation.motivoRejeicao ?? "—"}
+                  </TableCell>
                   <TableCell align="right">
                     <Button
                       component={Link}
