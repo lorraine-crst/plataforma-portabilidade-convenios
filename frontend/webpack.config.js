@@ -23,11 +23,20 @@ module.exports = (env, argv) => ({
         test: /\.css$/,
         use: ["style-loader", "css-loader"],
       },
+      {
+        test: /\.(png|jpe?g|webp|svg)$/i,
+        type: "asset/resource",
+      },
+      {
+        test: /\.(png|jpe?g|webp|svg|woff2?)$/i,
+        type: "asset/resource",
+      },
     ],
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: "./public/index.html",
+      favicon: "./public/favicon.svg",
     }),
   ],
   devtool: argv.mode === "production" ? "source-map" : "eval-source-map",

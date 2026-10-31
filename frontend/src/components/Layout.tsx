@@ -11,6 +11,7 @@ import { Link, NavLink, Outlet, useNavigate } from "react-router";
 import { useAuth } from "../auth/AuthContext";
 import { roleLabels } from "../auth/roles";
 import type { Role } from "../types";
+import { NuvolaLogo } from "./NuvolaLogo";
 
 interface MenuItem {
   label: string;
@@ -40,14 +41,13 @@ export function Layout() {
     <>
       <AppBar position="static" color="secondary" elevation={0}>
         <Toolbar sx={{ gap: 2, flexWrap: "wrap", py: 1 }}>
-          <Typography
+          <Box
             component={Link}
             to="/"
-            variant="h6"
-            sx={{ color: "inherit", fontWeight: 700, textDecoration: "none" }}
+            sx={{ color: "inherit", textDecoration: "none" }}
           >
-            Nuvola
-          </Typography>
+            <NuvolaLogo size={28} />
+          </Box>
 
           {user && (
             <>
