@@ -15,7 +15,7 @@ export function ErrorPage({ title, message }: ErrorPageProps) {
       <Typography variant="h4" component="h1">
         {title}
       </Typography>
-      <Typography color="text.secondary">{message}</Typography>
+      <Typography color="textSecondary">{message}</Typography>
       <Button component={Link} to="/" variant="contained">
         Voltar ao início
       </Button>

@@ -12,7 +12,7 @@ export function EmptyState({ message, children }: EmptyStateProps) {
       spacing={2}
       sx={{ alignItems: "center", py: 6, textAlign: "center" }}
     >
-      <Typography color="text.secondary">{message}</Typography>
+      <Typography color="textSecondary">{message}</Typography>
       {children}
     </Stack>
   );
