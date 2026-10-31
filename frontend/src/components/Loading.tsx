@@ -13,7 +13,7 @@ export function Loading({ text = "Carregando…" }: LoadingProps) {
       sx={{ alignItems: "center", py: 2 }}
     >
       <CircularProgress size={24} aria-hidden="true" />
-      <Typography color="text.secondary">{text}</Typography>
+      <Typography color="textSecondary">{text}</Typography>
     </Stack>
   );
 }
