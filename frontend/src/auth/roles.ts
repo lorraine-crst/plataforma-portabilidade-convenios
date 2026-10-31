@@ -7,6 +7,6 @@ export const roleLabels: Record<Role, string> = {
 
 export function getHomePath(role: Role): string {
   return role === "BENEFICIARIO"
-    ? "/beneficiario/autorizar"
+    ? "/beneficiario/solicitacoes"
     : "/operador/portabilidade";
 }

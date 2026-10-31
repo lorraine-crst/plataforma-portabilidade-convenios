@@ -19,7 +19,6 @@ interface MenuItem {
 
 const menus: Record<Role, MenuItem[]> = {
   BENEFICIARIO: [
-    { label: "Autorização", path: "/beneficiario/autorizar" },
     { label: "Minhas solicitações", path: "/beneficiario/solicitacoes" },
   ],
   OPERADOR: [

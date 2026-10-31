@@ -2,7 +2,6 @@ import { Route, Routes } from "react-router";
 import { HomeRedirect } from "./auth/HomeRedirect";
 import { ProtectedRoute } from "./auth/ProtectedRoute";
 import { Layout } from "./components/Layout";
-import { AuthorizePage } from "./pages/beneficiary/AuthorizePage";
 import { MyRequestsPage } from "./pages/beneficiary/MyRequestsPage";
 import { DashboardPage } from "./pages/operator/DashboardPage";
 import { NewPortabilityPage } from "./pages/operator/NewPortabilityPage";
@@ -18,7 +17,6 @@ export function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route element={<ProtectedRoute role="BENEFICIARIO" />}>
-            <Route path="/beneficiario/autorizar" element={<AuthorizePage />} />
             <Route
               path="/beneficiario/solicitacoes"
               element={<MyRequestsPage />}

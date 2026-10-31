@@ -4,23 +4,26 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import { App } from "./App";
 import { AuthProvider } from "./auth/AuthContext";
+import { NotificationProvider } from "./notifications/NotificationContext";
 import { theme } from "./theme";
 
-const raiz = document.getElementById("root");
+const root = document.getElementById("root");
 
-if (!raiz) {
-  throw new Error("Elemento #root não encontrado");
+if (!root) {
+  throw new Error("Element #root not found");
 }
 
-createRoot(raiz).render(
+createRoot(root).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-      </BrowserRouter>
+      <NotificationProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </BrowserRouter>
+      </NotificationProvider>
     </ThemeProvider>
   </StrictMode>,
 );

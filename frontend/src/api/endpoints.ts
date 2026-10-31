@@ -11,6 +11,7 @@ import type {
   Summary,
 } from "../types";
 import { request, requestWithStatus } from "./client";
+import { ApiError } from "./ApiError";
 
 export function login(
   username: string,
@@ -24,10 +25,22 @@ export function login(
 
 export async function registerAuthorization(): Promise<AuthorizationResult> {
   const { status, data } = await requestWithStatus<Authorization>(
-    "/autorizacoes",
+    "/autorizacao",
     { method: "POST" },
   );
   return { ...data, alreadyExisted: status === 200 };
+}
+
+export async function fetchMyAuthorization(): Promise<Authorization | null> {
+  try {
+    return await request<Authorization>("/autorizacao");
+  } catch (error) {
+    if (error instanceof ApiError && error.code === "NAO_ENCONTRADO") {
+      return null;
+    }
+
+    throw error;
+  }
 }
 
 export function fetchSchedule(beneficiarioId: string): Promise<Installment[]> {
