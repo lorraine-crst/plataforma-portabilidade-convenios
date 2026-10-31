@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(NoResourceFoundException.class)
 	public ResponseEntity<ErrorResponse> handleUnknownRoute(NoResourceFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
-				.body(new ErrorResponse("RECURSO_NAO_ENCONTRADO", "Rota não encontrada."));
+				.body(new ErrorResponse("NAO_ENCONTRADO", "Rota não encontrada."));
 	}
 
 	@ExceptionHandler(Exception.class)

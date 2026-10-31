@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 public class OperationNotFoundException extends ApiException {
 
 	public OperationNotFoundException(String operationId) {
-		super(HttpStatus.NOT_FOUND, "OPERACAO_NAO_ENCONTRADA",
+		super(HttpStatus.NOT_FOUND, "NAO_ENCONTRADO",
 				"Operação " + operationId + " não encontrada.");
 	}
 

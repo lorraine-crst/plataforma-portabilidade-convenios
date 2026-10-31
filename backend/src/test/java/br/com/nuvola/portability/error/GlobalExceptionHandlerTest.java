@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,12 +25,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @WebMvcTest(GlobalExceptionHandlerTest.ThrowingController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @Import(GlobalExceptionHandlerTest.ThrowingController.class)
-
-
 class GlobalExceptionHandlerTest {
 
 	@Autowired
@@ -41,8 +38,8 @@ class GlobalExceptionHandlerTest {
 			"central, 503, CENTRAL_INDISPONIVEL",
 			"uncertain, 504, ENVIO_INCERTO",
 			"not-authorized, 422, BENEFICIARIO_NAO_AUTORIZADO",
-			"not-found, 404, OPERACAO_NAO_ENCONTRADA",
-			"conflict, 422, IDEMPOTENCIA_CONFLITO",
+			"not-found, 404, NAO_ENCONTRADO",
+			"conflict, 409, CONFLITO",
 			"installment, 422, PARCELA_INVALIDA"
 	})
 	void mapsApiExceptionsToStatusAndCode(String type, int expectedStatus, String expectedCode) throws Exception {
