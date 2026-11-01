@@ -12,6 +12,8 @@ import br.com.nuvola.portability.central.CentralAuthorizationResponse;
 import br.com.nuvola.portability.central.CentralClient;
 import br.com.nuvola.portability.error.AuthorizationNotFoundException;
 import br.com.nuvola.portability.error.CentralUnavailableException;
+import br.com.nuvola.portability.error.BeneficiaryNotAuthorizedException;
+import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -77,6 +79,22 @@ class AuthorizationServiceTest {
 
 		assertThatThrownBy(() -> service.findMine("BEN001"))
 				.isInstanceOf(AuthorizationNotFoundException.class);
+	}
+
+	@Test
+	void ensureAuthorizedRejectsBeneficiaryWithoutOptIn() {
+		when(repository.findByBeneficiaryId("BEN003")).thenReturn(Optional.empty());
+
+		assertThatThrownBy(() -> service.ensureAuthorized("BEN003"))
+				.isInstanceOf(BeneficiaryNotAuthorizedException.class);
+	}
+
+	@Test
+	void ensureAuthorizedAcceptsBeneficiaryWithOptIn() {
+		when(repository.findByBeneficiaryId("BEN001"))
+				.thenReturn(Optional.of(new Authorization("BEN001", "AUT-1", Instant.now())));
+
+		service.ensureAuthorized("BEN001");
 	}
 
 }

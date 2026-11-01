@@ -3,6 +3,7 @@ package br.com.nuvola.portability.authorization;
 import br.com.nuvola.portability.central.CentralAuthorizationResponse;
 import br.com.nuvola.portability.central.CentralClient;
 import br.com.nuvola.portability.error.AuthorizationNotFoundException;
+import br.com.nuvola.portability.error.BeneficiaryNotAuthorizedException;
 import java.time.Instant;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,12 @@ public class AuthorizationService {
     public Authorization findMine(String beneficiaryId) {
         return repository.findByBeneficiaryId(beneficiaryId)
                 .orElseThrow(AuthorizationNotFoundException::new);
+    }
+
+    public void ensureAuthorized(String beneficiaryId) {
+        if (repository.findByBeneficiaryId(beneficiaryId).isEmpty()) {
+            throw new BeneficiaryNotAuthorizedException(beneficiaryId);
+        }
     }
 
     private AuthorizationResult register(String beneficiaryId) {
