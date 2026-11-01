@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
@@ -85,9 +86,10 @@ class GlobalExceptionHandlerTest {
 	}
 
 	@RestController
+	@RequestMapping("/test-errors")
 	public static class ThrowingController {
 
-		@GetMapping("/test-errors/{type}")
+		@GetMapping("/{type}")
 		public void throwError(@PathVariable String type) {
 			throw switch (type) {
 				case "central" -> new CentralUnavailableException();
@@ -100,11 +102,11 @@ class GlobalExceptionHandlerTest {
 			};
 		}
 
-		@PostMapping("/test-errors/validation")
+		@PostMapping("/validation")
 		public void validate(@Valid @RequestBody SampleRequest request) {
 		}
 
-		@GetMapping("/test-errors/header")
+		@GetMapping("/header")
 		public void requireHeader(@RequestHeader("Idempotency-Key") String idempotencyKey) {
 		}
 
