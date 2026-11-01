@@ -27,6 +27,17 @@ public class Operation {
 	public Operation() {
 	}
 
+	public boolean changeStatus(OperationStatus newStatus, String description) {
+		if (newStatus == status) {
+			return false;
+		}
+		Instant now = Instant.now();
+		this.status = newStatus;
+		this.updatedAt = now;
+		this.events.add(new Event(newStatus, now, description));
+		return true;
+	}
+
 	@DynamoDbPartitionKey
 	@DynamoDbAttribute("operacaoId")
 	public String getOperationId() {
@@ -133,7 +144,7 @@ public class Operation {
 	}
 
 	public void setEvents(List<Event> events) {
-		this.events = events;
+		this.events = events == null ? new ArrayList<>() : new ArrayList<>(events);
 	}
 
 }
