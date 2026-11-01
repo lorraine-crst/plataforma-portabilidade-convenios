@@ -8,5 +8,6 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "app.dynamo")
 public record DynamoProperties(
 		@NotBlank(message = "DYNAMO_ENDPOINT não pode ser vazio") String endpoint,
-		@NotBlank String region) {
+		@NotBlank String region,
+		boolean createTables) {
 }

@@ -12,6 +12,7 @@ app:
   dynamo:
     endpoint: ${DYNAMO_ENDPOINT:http://localhost:8000}
     region: us-east-1
+    create-tables: true
   secrets:
     jwt-secret: ${JWT_SECRET:}
     hmac-secret: ${HMAC_SECRET:}
