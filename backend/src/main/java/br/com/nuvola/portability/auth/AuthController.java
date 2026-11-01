@@ -1,5 +1,7 @@
 package br.com.nuvola.portability.auth;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +17,8 @@ public class AuthController {
 	public AuthController(AuthService authService) {
 		this.authService = authService;
 	}
+
+	@SecurityRequirements
 
 	@PostMapping("/login")
 	public LoginResponse login(@Valid @RequestBody LoginRequest request) {

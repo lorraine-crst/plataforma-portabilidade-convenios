@@ -1,0 +1,85 @@
+@baseUrl = http://localhost:8080
+@senha = lola123
+@idempotencyKey = portabilidade-demo-1
+
+###
+# @name loginBeneficiario
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{ "usuario": "BEN001", "senha": "{{senha}}" }
+
+###
+GET {{baseUrl}}/api/autorizacao
+Authorization: Bearer {{loginBeneficiario.response.body.$.token}}
+
+###
+POST {{baseUrl}}/api/autorizacao
+Authorization: Bearer {{loginBeneficiario.response.body.$.token}}
+
+###
+# @name loginOperador
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{ "usuario": "operador", "senha": "{{senha}}" }
+
+###
+GET {{baseUrl}}/api/beneficiarios/BEN001/agenda
+Authorization: Bearer {{loginOperador.response.body.$.token}}
+
+###
+# @name criarPortabilidade
+POST {{baseUrl}}/api/portabilidades
+Authorization: Bearer {{loginOperador.response.body.$.token}}
+Content-Type: application/json
+Idempotency-Key: {{idempotencyKey}}
+
+{
+  "beneficiarioId": "BEN001",
+  "parcelaIds": ["P001", "P002"],
+  "contaDestino": { "banco": "001", "agencia": "1234", "conta": "56789-0" }
+}
+
+###
+POST {{baseUrl}}/api/portabilidades
+Authorization: Bearer {{loginOperador.response.body.$.token}}
+Content-Type: application/json
+Idempotency-Key: {{idempotencyKey}}
+
+{
+  "beneficiarioId": "BEN001",
+  "parcelaIds": ["P001", "P002"],
+  "contaDestino": { "banco": "001", "agencia": "1234", "conta": "56789-0" }
+}
+
+###
+POST {{baseUrl}}/api/portabilidades
+Authorization: Bearer {{loginOperador.response.body.$.token}}
+Content-Type: application/json
+Idempotency-Key: {{idempotencyKey}}
+
+{
+  "beneficiarioId": "BEN001",
+  "parcelaIds": ["P001"],
+  "contaDestino": { "banco": "001", "agencia": "1234", "conta": "56789-0" }
+}
+
+###
+GET {{baseUrl}}/api/portabilidades/{{criarPortabilidade.response.body.$.operacaoId}}
+Authorization: Bearer {{loginOperador.response.body.$.token}}
+
+###
+GET {{baseUrl}}/api/portabilidades?status=CONFIRMADA
+Authorization: Bearer {{loginOperador.response.body.$.token}}
+
+###
+GET {{baseUrl}}/api/portabilidades/resumo
+Authorization: Bearer {{loginOperador.response.body.$.token}}
+
+###
+GET {{baseUrl}}/api/portabilidades
+
+###
+GET {{baseUrl}}/api/beneficiarios/BEN001/agenda
+Authorization: Bearer {{loginBeneficiario.response.body.$.token}}
