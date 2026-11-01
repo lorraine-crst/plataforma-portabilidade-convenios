@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import br.com.nuvola.portability.config.JwtConfig;
 import br.com.nuvola.portability.config.SecurityConfig;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -128,6 +129,7 @@ class AuthSecurityTest {
     }
 
     @RestController
+    @RequestMapping("/api")
     public static class ProtectedController {
 
         private final CurrentUser currentUser;
@@ -136,12 +138,12 @@ class AuthSecurityTest {
             this.currentUser = currentUser;
         }
 
-        @GetMapping("/api/beneficiarios/{id}/agenda")
+        @GetMapping("/beneficiarios/{id}/agenda")
         public String schedule(@PathVariable String id) {
             return "agenda de " + id;
         }
 
-        @GetMapping("/api/autorizacao")
+        @GetMapping("/autorizacao")
         public String whoAmI() {
             return currentUser.username() + " " + currentUser.role();
         }
