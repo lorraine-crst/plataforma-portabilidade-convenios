@@ -1,0 +1,13 @@
+FROM node:24-alpine AS build
+WORKDIR /app
+ENV CYPRESS_INSTALL_BINARY=0
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM nginx:1.27-alpine
+ENV BACKEND_URL=http://backend:8080
+COPY nginx/default.conf.template /etc/nginx/templates/default.conf.template
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
