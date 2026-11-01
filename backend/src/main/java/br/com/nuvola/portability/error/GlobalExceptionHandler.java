@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -45,6 +46,13 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponse> handleUnknownRoute(NoResourceFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
 				.body(new ErrorResponse("NAO_ENCONTRADO", "Rota não encontrada."));
+	}
+
+	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+	public ResponseEntity<ErrorResponse> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
+		return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+				.body(new ErrorResponse("METODO_NAO_PERMITIDO",
+						"Método " + ex.getMethod() + " não permitido nesta rota."));
 	}
 
 	@ExceptionHandler(Exception.class)

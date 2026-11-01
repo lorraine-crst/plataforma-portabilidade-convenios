@@ -53,8 +53,8 @@ class GlobalExceptionHandlerTest {
 	@Test
 	void returnsValidationErrorForInvalidBody() throws Exception {
 		mockMvc.perform(post("/test-errors/validation")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content("{}"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{}"))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.codigo").value("VALIDACAO"))
 				.andExpect(jsonPath("$.mensagem").value(containsString("name")));
@@ -63,8 +63,8 @@ class GlobalExceptionHandlerTest {
 	@Test
 	void returnsValidationErrorForMalformedJson() throws Exception {
 		mockMvc.perform(post("/test-errors/validation")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content("{ quebrado"))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{ quebrado"))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.codigo").value("VALIDACAO"));
 	}
@@ -75,6 +75,14 @@ class GlobalExceptionHandlerTest {
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.codigo").value("VALIDACAO"))
 				.andExpect(jsonPath("$.mensagem").value(containsString("Idempotency-Key")));
+	}
+
+	@Test
+	void returnsMethodNotAllowedForWrongHttpMethod() throws Exception {
+		mockMvc.perform(post("/test-errors/header"))
+				.andExpect(status().isMethodNotAllowed())
+				.andExpect(jsonPath("$.codigo").value("METODO_NAO_PERMITIDO"))
+				.andExpect(jsonPath("$.mensagem").value(containsString("POST")));
 	}
 
 	@Test

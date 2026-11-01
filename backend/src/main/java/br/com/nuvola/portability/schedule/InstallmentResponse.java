@@ -1,6 +1,7 @@
 package br.com.nuvola.portability.schedule;
 
 import br.com.nuvola.portability.central.CentralInstallment;
+import br.com.nuvola.portability.operation.Installment;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -18,6 +19,15 @@ public record InstallmentResponse(
                 installment.valor(),
                 installment.dataDesconto(),
                 installment.status());
+    }
+
+    public static InstallmentResponse from(Installment installment) {
+        return new InstallmentResponse(
+                installment.getInstallmentId(),
+                installment.getAgreementId(),
+                installment.getAmount(),
+                installment.getDeductionDate(),
+                installment.getStatus());
     }
 
 }
