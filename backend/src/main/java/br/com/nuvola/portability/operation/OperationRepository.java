@@ -33,6 +33,10 @@ public class OperationRepository {
 		return Optional.ofNullable(table.getItem(key));
 	}
 
+	public void delete(String operationId) {
+		table.deleteItem(Key.builder().partitionValue(operationId).build());
+	}
+
 	public List<Operation> findAll(OperationStatus status, String beneficiaryId) {
 		ScanEnhancedRequest.Builder request = ScanEnhancedRequest.builder();
 		Expression filter = buildFilter(status, beneficiaryId);
