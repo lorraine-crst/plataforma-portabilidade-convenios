@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
@@ -23,6 +24,7 @@ public class CentralClient {
 		this.restClient = centralRestClient;
 	}
 
+	@Retryable(includes = CentralUnavailableException.class, maxRetries = 2, delay = 500, multiplier = 2)
 	public CentralAuthorizationResponse registerAuthorization(String beneficiaryId) {
 		return call(false, () -> restClient.post()
 				.uri("/autorizacoes")
@@ -32,6 +34,7 @@ public class CentralClient {
 				.body(CentralAuthorizationResponse.class));
 	}
 
+	@Retryable(includes = CentralUnavailableException.class, maxRetries = 2, delay = 500, multiplier = 2)
 	public List<CentralInstallment> getSchedule(String beneficiaryId) {
 		return call(false, () -> restClient.get()
 				.uri("/beneficiarios/{id}/agenda", beneficiaryId)
@@ -40,6 +43,7 @@ public class CentralClient {
 				}));
 	}
 
+	@Retryable(includes = CentralUnavailableException.class, maxRetries = 2, delay = 500, multiplier = 2)
 	public String createOperation(CentralOperationRequest request) {
 		CentralProtocolResponse response = call(true, () -> restClient.post()
 				.uri("/operacoes-portabilidade")
@@ -50,6 +54,7 @@ public class CentralClient {
 		return response.protocolo();
 	}
 
+	@Retryable(includes = CentralUnavailableException.class, maxRetries = 2, delay = 500, multiplier = 2)
 	public CentralOperationStatus getOperationStatus(String protocol) {
 		return call(false, () -> restClient.get()
 				.uri("/operacoes-portabilidade/{protocolo}", protocol)

@@ -5,10 +5,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
+import org.springframework.resilience.annotation.EnableResilientMethods;
 
 @Configuration
+@EnableResilientMethods
 public class CentralClientConfig {
-
 	@Bean
 	public RestClient centralRestClient(CentralProperties properties) {
 		HttpClient httpClient = HttpClient.newBuilder()
