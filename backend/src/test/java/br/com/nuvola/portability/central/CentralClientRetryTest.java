@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import br.com.nuvola.portability.config.CentralClientConfig;
 import br.com.nuvola.portability.config.CentralProperties;
+import br.com.nuvola.portability.config.SecretsProperties;
 import br.com.nuvola.portability.error.CentralUnavailableException;
 import br.com.nuvola.portability.error.UncertainSubmissionException;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -103,6 +104,11 @@ class CentralClientRetryTest {
 		@Bean
 		CentralProperties centralProperties() {
 			return new CentralProperties(central.baseUrl(), Duration.ofSeconds(1), Duration.ofMillis(500));
+		}
+
+		@Bean
+		SecretsProperties secretsProperties() {
+			return new SecretsProperties("test-jwt-secret-com-pelo-menos-32-caracteres", "test-hmac-secret");
 		}
 
 	}

@@ -2,11 +2,14 @@ package br.com.nuvola.portability.central;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.noContent;
 import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.serviceUnavailable;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,6 +20,7 @@ import br.com.nuvola.portability.error.CentralUnavailableException;
 import br.com.nuvola.portability.error.UncertainSubmissionException;
 import br.com.nuvola.portability.operation.OperationStatus;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -26,6 +30,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 class CentralClientTest {
+
+	private static final String HMAC_SECRET = "test-hmac-secret";
 
 	@RegisterExtension
 	static WireMockExtension central = WireMockExtension.newInstance()
@@ -132,9 +138,38 @@ class CentralClientTest {
 				.isInstanceOf(UncertainSubmissionException.class);
 	}
 
+	@Test
+	void signsPostWithTimestampAndHmacOfExactBody() {
+		central.stubFor(post("/operacoes-portabilidade").willReturn(aResponse()
+				.withStatus(202)
+				.withHeader("Content-Type", "application/json")
+				.withBody("""
+						{ "protocolo": "PROTO-1" }
+						""")));
+
+		client.createOperation(operationRequest());
+
+		LoggedRequest received = central.findAll(postRequestedFor(urlEqualTo("/operacoes-portabilidade"))).getFirst();
+		String timestamp = received.getHeader(HmacSigningInterceptor.TIMESTAMP_HEADER);
+		String signature = received.getHeader(HmacSigningInterceptor.SIGNATURE_HEADER);
+
+		assertThat(timestamp).isNotBlank();
+		assertThat(signature).isEqualTo(new HmacSigner(HMAC_SECRET).signRequest(timestamp, received.getBody()));
+	}
+
+	@Test
+	void doesNotSignGetRequests() {
+		central.stubFor(get("/beneficiarios/BEN001/agenda").willReturn(okJson("[]")));
+
+		client.getSchedule("BEN001");
+
+		LoggedRequest received = central.findAll(getRequestedFor(urlEqualTo("/beneficiarios/BEN001/agenda"))).getFirst();
+		assertThat(received.containsHeader(HmacSigningInterceptor.SIGNATURE_HEADER)).isFalse();
+	}
+
 	private CentralClient clientFor(String url) {
 		CentralProperties properties = new CentralProperties(url, Duration.ofSeconds(1), Duration.ofMillis(500));
-		return new CentralClient(new CentralClientConfig().centralRestClient(properties));
+		return new CentralClient(new CentralClientConfig().centralRestClient(properties, new HmacSigner(HMAC_SECRET)));
 	}
 
 	private CentralOperationRequest operationRequest() {
