@@ -10,6 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
+import java.util.List;
+
 @Service
 public class OperationTrackingService {
 
@@ -31,6 +34,20 @@ public class OperationTrackingService {
                 .orElseThrow(() -> new OperationNotFoundException(operationId));
         ensureCanView(operation);
         return refresh(operation);
+    }
+
+    public List<Operation> list(OperationStatus status, String beneficiaryId) {
+        String beneficiaryFilter = currentUser.isOperator() ? beneficiaryId : currentUser.username();
+        return operationRepository.findAll(null, beneficiaryFilter).stream()
+                .filter(operation -> operation.getStatus() != OperationStatus.FALHA_ENVIO)
+                .map(this::refresh)
+                .filter(operation -> status == null || operation.getStatus().publicStatus() == status)
+                .sorted(Comparator.comparing(Operation::getCreatedAt).reversed())
+                .toList();
+    }
+
+    public OperationSummaryResponse summarize() {
+        return OperationSummaryResponse.from(list(null, null));
     }
 
     private void ensureCanView(Operation operation) {

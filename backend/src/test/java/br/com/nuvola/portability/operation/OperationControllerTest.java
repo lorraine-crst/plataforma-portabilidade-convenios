@@ -78,6 +78,43 @@ class OperationControllerTest {
                 .andExpect(jsonPath("$.codigo").value("NAO_ENCONTRADO"));
     }
 
+    @Test
+    void listsOperationsInContractFormat() throws Exception {
+        when(currentUser.isOperator()).thenReturn(true);
+        when(operationRepository.findAll(null, null)).thenReturn(List.of(rejectedOperation("OP-2", "BEN002")));
+
+        mockMvc.perform(get("/api/portabilidades"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].operacaoId").value("OP-2"))
+                .andExpect(jsonPath("$[0].beneficiarioId").value("BEN002"))
+                .andExpect(jsonPath("$[0].status").value("REJEITADA"))
+                .andExpect(jsonPath("$[0].motivoRejeicao").value("Beneficiário atingiu o limite de margem consignável"))
+                .andExpect(jsonPath("$[0].criadaEm").value("2026-10-29T21:45:00Z"))
+                .andExpect(jsonPath("$[0].quantidadeParcelas").value(1))
+                .andExpect(jsonPath("$[0].valorTotal").value(300.00));
+    }
+
+    @Test
+    void returnsSummaryInsteadOfTreatingResumoAsAnId() throws Exception {
+        when(currentUser.isOperator()).thenReturn(true);
+        when(operationRepository.findAll(null, null)).thenReturn(List.of(rejectedOperation("OP-2", "BEN002")));
+
+        mockMvc.perform(get("/api/portabilidades/resumo"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.total").value(1))
+                .andExpect(jsonPath("$.pendentes").value(0))
+                .andExpect(jsonPath("$.confirmadas").value(0))
+                .andExpect(jsonPath("$.rejeitadas").value(1))
+                .andExpect(jsonPath("$.valorTotalConfirmado").value(0));
+    }
+
+    @Test
+    void rejectsUnknownStatusFilter() throws Exception {
+        mockMvc.perform(get("/api/portabilidades").param("status", "XYZ"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.codigo").value("VALIDACAO"));
+    }
+
     private Operation rejectedOperation(String operationId, String beneficiaryId) {
         Operation operation = new Operation();
         operation.setOperationId(operationId);
