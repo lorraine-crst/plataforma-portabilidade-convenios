@@ -3,11 +3,13 @@ import { Box, Stack, Typography } from "@mui/material";
 interface NuvolaLogoProps {
   size?: number;
   showTagline?: boolean;
+  hideNameOnMobile?: boolean;
 }
 
 export function NuvolaLogo({
   size = 32,
   showTagline = false,
+  hideNameOnMobile = false,
 }: NuvolaLogoProps) {
   return (
     <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
@@ -24,7 +26,16 @@ export function NuvolaLogo({
           <rect x="22" y="36" width="22" height="10" />
         </g>
       </Box>
-      <div>
+      <Box
+        sx={
+          hideNameOnMobile
+            ? {
+                display: "none",
+                "@media (min-width: 375px)": { display: "block" },
+              }
+            : undefined
+        }
+      >
         <Typography
           component="span"
           sx={{
@@ -45,7 +56,7 @@ export function NuvolaLogo({
             Portabilidade de convênios
           </Typography>
         )}
-      </div>
+      </Box>
     </Stack>
   );
 }
