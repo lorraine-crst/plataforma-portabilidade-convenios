@@ -225,7 +225,7 @@ Nenhum beneficiário começa com opt-in. Cada um precisa autorizar antes que o o
 | `BEN_ERRO` | vazia | Pela tela, mostra "Nenhuma parcela encontrada". A Central responde 503 no POST da portabilidade, o que o backend converte em `CENTRAL_INDISPONIVEL` |
 | Qualquer ID sem opt-in (ex.: `BEN003`) | — | `BENEFICIARIO_NAO_AUTORIZADO` (422) na consulta da agenda |
 
-O simulador da Central é usado sem alterações. Como a agenda do `BEN_ERRO` vem vazia, a tela não permite enviar uma portabilidade para ele. Por isso, o erro 503 é testado em duas camadas:
+O comportamento do simulador da Central não foi alterado (só os erros de extração do PDF foram corrigidos; ver o README). Como a agenda do `BEN_ERRO` vem vazia, a tela não permite enviar uma portabilidade para ele. Por isso, o erro 503 é testado em duas camadas:
 
 - Backend: teste de integração que chama a Central com `BEN_ERRO` e verifica a resposta `503` com `CENTRAL_INDISPONIVEL`
 - Front: teste de componente com `cy.intercept` devolvendo `503`, verificando que a tela mostra a mensagem e o botão "Tentar novamente"
