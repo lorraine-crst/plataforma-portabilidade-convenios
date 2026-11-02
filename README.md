@@ -128,7 +128,5 @@ Usei o **Claude Code** no VS Code (modelo Opus, esforço médio) para gerar e re
 - **Testes de componente no front** (os fluxos principais estão cobertos pelos 5 testes E2E)
 
 **Faria a seguir:**
-- **Logs do fluxo** com o `operacaoId` em cada passo, sem dados sensíveis
-- **Nomes no Swagger**, agrupando as rotas com `@Tag`
 - **Simulador estendido**, separado do oficial, com cenários que a tela hoje não mostra: envio sempre 503 com agenda preenchida, 503 seguido de sucesso, resposta mais lenta que o timeout e parcela já quitada
 
