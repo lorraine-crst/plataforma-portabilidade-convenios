@@ -8,7 +8,9 @@
     "build": "webpack --mode production",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "e2e": "cypress run",
+    "e2e:open": "cypress open"
   },
   "keywords": [],
   "author": "",
